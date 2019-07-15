@@ -1,0 +1,22 @@
+{
+    "name":             "szwsuny/container",
+    "description":      "",
+    "keywords":         [],
+    "time":             "2019-7-12",
+    "license":          "MIT",
+    "version":          "1.1.0",
+    "role":             "Engineer",
+    "authors": [{
+        "name":         "sunzhiwei",
+        "email":        "xue5521@qq.com"
+    }],
+    "require":{
+        "php":">=7.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SzwSuny\\" : "src"
+        }
+    }
+}
+
