@@ -61,6 +61,16 @@ class ManageContainer {
         $this->container->add($low);
     }
 
+    public function del($low)
+    {
+        $this->container->del($low);
+    }
+
+    public function getSize()
+    {
+        return $this->container->getSize();
+    }
+
     public function find($low)
     {
         return $this->container->find($low);
@@ -100,5 +110,6 @@ class ManageContainer {
 
         return $this->bitmapContainer;
     }
+
 }
 

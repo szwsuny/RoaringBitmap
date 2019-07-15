@@ -15,10 +15,12 @@ require __DIR__ . '/../vendor/autoload.php';
 use SzwSuny\RoaringBitMap;
 
 $roar = new RoaringBitMap();
-$roar->add(10000120);
-$roar->add(1);
-$roar->add(100001);
-$roar->add(12312312312);
 
+$roar->add(0);
+$roar->add(0);
+$roar->add(4);
+$roar->add(64);
+
+$roar->del(4);
 
 var_dump($roar->getValues());

@@ -42,7 +42,7 @@ class RoaringBitMap
 
         if($index == -1) //容器不存在 则创建一个容器
         {
-            if($this->keys[$insertIndex] < $high)
+            if(!isset($this->keys[$insertIndex]) || $this->keys[$insertIndex] < $high)
             {
                 $insertIndex++;
             }
@@ -50,6 +50,7 @@ class RoaringBitMap
 
             array_splice($this->keys,$insertIndex,0,$high);
             array_splice($this->containers,$insertIndex,0,'a '.$low); //默认启用 数组容器 数组容器的结构用空格分隔 第一位是类型 后面是保存的数组 低位
+            // array_splice($this->containers,$insertIndex,0,'b 0'); 
             $this->size++;
         } else 
         {
@@ -60,11 +61,54 @@ class RoaringBitMap
             if(!$manageContainer->find($low)) //如果没找到就进行添加
             {
                 $manageContainer->add($low);
-                $this->containers[$index] = $manageContainer->getValues(); //将结果存到container中
+                $this->containers[$index] = $manageContainer->getValues();
                 $this->size++;
             }
         }
     }
+
+    /**
+     * @brief 删除某个数
+     *
+     * @param $int
+     *
+     * @return 
+     */
+    public function del($int)
+    {
+        list($high,$low) = $this->getHighLow($int);
+        list($index,$insertIndex) = $this->findIndex($high);
+
+        if($index == -1)
+        {
+            return true; //容器不存在 就当处理成功
+        }
+
+        $container = $this->containers[$index];
+        $manageContainer = ManageContainer::getInstance();
+        $manageContainer->set($container);
+
+        if(!$manageContainer->find($low))
+        {
+            return true; //容器中也没找到
+        }
+
+        $manageContainer->del($low);
+
+        if($manageContainer->getSize() < 1) //容器没有东西了
+        {
+            unset($this->keys[$index]);
+            unset($this->containers[$index]);
+            $this->keys = array_values($this->keys);
+            $this->containers = array_values($this->containers);
+        } else 
+        {
+            $this->containers[$index] = $manageContainer->getValues();
+        }
+
+        $this->size--;
+    }
+
 
     /**
      * @brief 得到结果
