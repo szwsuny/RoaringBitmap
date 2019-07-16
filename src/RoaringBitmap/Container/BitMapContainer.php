@@ -10,6 +10,7 @@
  *   Tool          ：vim 8.0
  */
 
+
 namespace SzwSuny\RoaringBitmap\Container;
 
 class BitMapContainer 

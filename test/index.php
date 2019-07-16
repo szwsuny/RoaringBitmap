@@ -20,11 +20,21 @@ use SzwSuny\RoaringBitmap\RoaringBitMap;
 
 $roar = new RoaringBitMap();
 
-for($i = 60000;$i<100000;$i++)
-{
-    echo $i . "\r";
-    $roar->add($i);
-}
+// for($i = 60000;$i<100000;$i++)
+// {
+    // echo $i . "\r";
+    // $roar->add($i);
+// }
+//
+
+$roar->add(1);
+$roar->add(1000);
+$roar->add(200000);
+$roar->add(20000000);
+$roar->add(20000000);
+$roar->add(20000001);
+$roar->add(20000004);
+$roar->add(20000005);
 
 // $roar->set(array (
   // 'key' =>
