@@ -29,8 +29,7 @@ class BitMapContainer
 
         if(!isset($this->array[$index])) //如果不存在就区补位
         {
-            $diff = $index - count($this->array);
-            $this->array = array_pad($this->array,$diff + 1,0);
+            $this->array = array_pad($this->array,$index + 1,0);
         }
 
         $num = 1 << $sp;
