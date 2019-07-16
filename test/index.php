@@ -12,15 +12,37 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use SzwSuny\RoaringBitMap;
+use SzwSuny\RoaringBitmap\Container\BitMapContainer;
+
+use SzwSuny\RoaringBitmap\Container\RunContainer;
+
+use SzwSuny\RoaringBitmap\RoaringBitMap;
 
 $roar = new RoaringBitMap();
 
-$roar->add(0);
-$roar->add(0);
-$roar->add(4);
-$roar->add(64);
+for($i = 60000;$i<100000;$i++)
+{
+    echo $i . "\r";
+    $roar->add($i);
+}
 
-$roar->del(4);
+// $roar->set(array (
+  // 'key' =>
+  // array (
+    // 0 => 0,
+    // 1 => 106,
+    // 2 => 12207,
+  // ),
+  // 'container' =>
+  // array (
+    // 0 => 'a 0 4 64 60000',
+    // 1 => 'a 53184',
+    // 2 => 'a 2048',
+  // ),
+  // 'size' => 6,
+// ));
 
-var_dump($roar->getValues());
+$roar->runOptimize();
+
+
+var_export($roar->get());

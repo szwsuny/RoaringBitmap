@@ -10,7 +10,7 @@
  *   Tool          ：vim 8.0
  */
 
-namespace SzwSuny\Container;
+namespace SzwSuny\RoaringBitmap\Container;
 
 class BitMapContainer 
 {
@@ -132,5 +132,24 @@ class BitMapContainer
         }
 
         return $ints;
+    }
+
+    public function to($ints)
+    {
+        $array = [0];
+        foreach($ints as $int)
+        {
+            list($index,$sp) = $this->findIndex($int); //数组都是0开始数
+
+            if(!isset($array[$index])) //如果不存在就区补位
+            {
+                $array = array_pad($array,$index + 1,0);
+            }
+
+            $num = 1 << $sp;
+            $array[$index] = $array[$index] | $num;
+        }
+
+        return $array;
     }
 }

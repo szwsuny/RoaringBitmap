@@ -10,8 +10,9 @@
  *   Tool          ：vim 8.0
  */
 
-namespace SzwSuny\Container;
+namespace SzwSuny\RoaringBitmap\Container;
 
+use SzwSuny\RoaringBitmap\RoaringConfig;
 
 class ManageContainer {
 
@@ -43,13 +44,13 @@ class ManageContainer {
         $this->c_type = substr($values,0,1);
         switch($this->c_type)
         {
-        case 'a':
+        case RoaringConfig::__ARRAY_PREFIX__:
             $this->container = $this->getArrayContainer();
             break;
-        case 'b':
+        case RoaringConfig::__BITMAP_PREFIX__:
             $this->container = $this->getBitMapContainer();
             break;
-        case 'r':
+        case RoaringConfig::__RUN_PREFIX__:
             $this->container = $this->getRunContainer();
         }
 
@@ -71,6 +72,11 @@ class ManageContainer {
         return $this->container->getSize();
     }
 
+    public function getInts()
+    {
+        return $this->container->getInts();
+    }
+
     public function find($low)
     {
         return $this->container->find($low);
@@ -79,6 +85,43 @@ class ManageContainer {
     public function getValues()
     {
         return $this->c_type . ' ' . $this->container->getValues();
+    }
+
+    public function runOptimize()
+    {
+        $ints = $this->getInts();
+
+        $array = $ints;
+        $bitmap = $this->getBitMapContainer()->to($ints);
+        $run = $this->getRunContainer()->to($ints);
+
+        $array_length = count($array);
+        $bitmap_length = count($bitmap);
+        $run_length = count($run) * 2;
+
+        $lengths = [$array_length,$bitmap_length,$run_length];
+
+        $minValue = null;
+        $index = 0;
+        foreach($lengths as $key=>$length)
+        {
+            if($minValue == null)
+            {
+                $minValue = $length;
+                $index = $key;
+                continue;
+            }
+
+            if($length < $minValue)
+            {
+                $minValue = $length;
+                $index = $key;
+            }
+        }
+
+        $prefix = [RoaringConfig::__ARRAY_PREFIX__,RoaringConfig::__BITMAP_PREFIX__,RoaringConfig::__RUN_PREFIX__][$index];
+        $values = [$array,$bitmap,$run][$index];
+        $this->set($prefix . ' ' . implode(' ',$values));
     }
 
     private function getRunContainer()

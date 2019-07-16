@@ -10,9 +10,10 @@
  *   Tool          ：vim 8.0
  */
 
-namespace SzwSuny;
+namespace SzwSuny\RoaringBitmap;
 
-use SzwSuny\Container\ManageContainer;
+use SzwSuny\RoaringBitmap\RoaringConfig;
+use SzwSuny\RoaringBitmap\Container\ManageContainer;
 
 class RoaringBitMap 
 {
@@ -49,8 +50,8 @@ class RoaringBitMap
 
 
             array_splice($this->keys,$insertIndex,0,$high);
-            array_splice($this->containers,$insertIndex,0,'a '.$low); //默认启用 数组容器 数组容器的结构用空格分隔 第一位是类型 后面是保存的数组 低位
-            // array_splice($this->containers,$insertIndex,0,'b 0'); 
+            //默认启用 数组容器 数组容器的结构用空格分隔 第一位是类型 后面是保存的数组 低位
+            array_splice($this->containers,$insertIndex,0,RoaringConfig::__ARRAY_PREFIX__ . ' ' .$low);
             $this->size++;
         } else 
         {
@@ -109,15 +110,70 @@ class RoaringBitMap
         $this->size--;
     }
 
+    /**
+     * @brief 获得所有数字
+     *
+     * @return 
+     */
+    public function getInts()
+    {
+        $ints = [];
+        $manageContainer = ManageContainer::getInstance();
+        for($i = 0;$i< count($this->keys);$i++)
+        {
+            $high = $this->keys[$i];
+            $highNumber = $high << 16;
+
+            $container = $this->containers[$i];
+            $manageContainer->set($container);
+            $c_ints = $manageContainer->getInts();
+
+            foreach($c_ints as $int)
+            {
+                $ints[] = $highNumber + $int;
+            }
+        }
+
+        return $ints;
+    }
+
+    /**
+     * @brief 调整存储结构，所有的结构都不会自由转换，只有调用此函数才会重新转换成使用空间少的
+     *
+     * @return 
+     */
+    public function runOptimize()
+    {
+        foreach($this->containers as $key => $container)
+        {
+            $manageContainer = ManageContainer::getInstance();
+            $manageContainer->set($container);
+            $manageContainer->runOptimize();
+            $this->containers[$key] = $manageContainer->getValues();
+        }
+    }
+
 
     /**
      * @brief 得到结果
      *
      * @return 
      */
-    public function getValues()
+    public function get()
     {
         return ['key'=>$this->keys,'container'=>$this->containers,'size'=>$this->size];
+    }
+
+    /**
+     * @brief 设置内容
+     *
+     * @return 
+     */
+    public function set($array)
+    {
+        $this->keys = $array['key'];
+        $this->containers = $array['container'];
+        $this->size = $array['size'];
     }
 
     /**

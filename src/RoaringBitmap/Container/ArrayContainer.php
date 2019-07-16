@@ -10,7 +10,7 @@
 *   Tool          ：vim 8.0
 */
 
-namespace SzwSuny\Container;
+namespace SzwSuny\RoaringBitmap\Container;
 
 class ArrayContainer 
 {
@@ -72,5 +72,11 @@ class ArrayContainer
     public function getInts()
     {
         return $this->array;
+    }
+
+    public function to($ints)
+    {
+        sort($ints);
+        $this->array = $ints;
     }
 }
