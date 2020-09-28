@@ -12,6 +12,7 @@
 
 namespace SzwSuny\RoaringBitmap;
 
+use SzwSuny\RoaringBitmap\Container\BitMapContainer;
 use SzwSuny\RoaringBitmap\RoaringConfig;
 use SzwSuny\RoaringBitmap\Container\ManageContainer;
 
@@ -174,6 +175,73 @@ class RoaringBitMap
         $this->keys = $array['key'];
         $this->containers = $array['container'];
         $this->size = $array['size'];
+    }
+
+    /**
+     * @brief 与另外一个roaring进行与运算
+     *
+     * @param mixed $roaringBitMap
+     *
+     * @return 
+     */
+    public function and(RoaringBitMap $roaringBitMap)
+    {
+        list($keys,$container) = array_values($roaringBitMap->get());
+
+        $flip_keys = array_flip($keys);
+
+        $newRoaringBitMap = new RoaringBitMap();
+
+        $manageContainer = ManageContainer::getInstance();
+        $bitMapContainer = new BitMapContainer();
+
+        foreach($this->keys as $base_index => $base_key)
+        {
+            if(!isset($flip_keys[$base_key]))
+            {
+                continue;
+            }
+
+            $flip_index = $flip_keys[$base_key];
+
+            $base_container = $this->containers[$base_index];
+            $param_container = $container[$flip_index];
+
+            $manageContainer->set($base_container);
+            $base_ints = $manageContainer->getInts();
+            $base_bitmap = $bitMapContainer->to($base_ints);
+
+            $manageContainer->set($param_container);
+            $param_ints = $manageContainer->getInts();
+            $param_bitmap = $bitMapContainer->to($param_ints);
+
+            $base_length = count($base_bitmap);
+            $param_length = count($param_bitmap);
+
+            $end_length = $base_length > $param_length ? $base_length : $param_length;
+
+            for($i = 0;$i <= $end_length; $i++)
+            {
+                if(!isset($base_bitmap[$i]) || $base_bitmap[$i] == 0 | $param_bitmap[$i] == 0)
+                {
+                    continue;
+                }
+
+                $bitmap = $base_bitmap[$i] & $param_bitmap[$i];
+                $lastNum = $i * $bitMapContainer->_INT_MAX_LENGTH_;
+                for($j = 0;$j < $bitMapContainer->_INT_MAX_LENGTH_;$j++)
+                {
+                    $num = 1 << $j;
+                    if($num == ($bitmap & $num))
+                    {
+                        $newRoaringBitMap->add(($base_key << 16) + $lastNum + $j);
+                    }
+                }
+            }
+        }
+
+        return $newRoaringBitMap;
+
     }
 
     /**

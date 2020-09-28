@@ -17,7 +17,7 @@ class BitMapContainer
 {
     private $array = [];
 
-    private $_INT_MAX_LENGTH_ = 64;
+    public $_INT_MAX_LENGTH_ = 64;
 
     public function init($values)
     {
