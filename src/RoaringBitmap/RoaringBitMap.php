@@ -222,7 +222,7 @@ class RoaringBitMap
 
             for($i = 0;$i <= $end_length; $i++)
             {
-                if(!isset($base_bitmap[$i]) || $base_bitmap[$i] == 0 || $param_bitmap[$i] == 0)
+                if(!isset($base_bitmap[$i]) || !isset($param_bitmap[$i]) || $base_bitmap[$i] == 0 || $param_bitmap[$i] == 0)
                 {
                     continue;
                 }
